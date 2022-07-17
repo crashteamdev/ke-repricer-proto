@@ -1,0 +1,532 @@
+syntax = "proto3";
+
+package kerepricer;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+option java_multiple_files = true;
+option java_outer_classname = "KeRepricerProto";
+option java_package = "dev.crashteam.kerepricer";
+
+message KazanExpressAccountRef {
+  string id = 1;
+}
+
+message KazanExpressShopRef {
+  oneof ref {
+    int64 id = 1;
+  }
+}
+
+message KazanExpressShopItemRef {
+  int64 product_id = 1;
+  int64 sku_id = 2;
+}
+
+message KazanExpressAccount {
+  string name = 1;
+  google.protobuf.Timestamp last_update = 2;
+  MonitoringState monitoring_state = 3;
+  UpdateState update_state = 4;
+}
+
+enum UpdateState {
+  IN_PROGRESS = 0;
+  FINISHED = 1;
+  ERROR = 2;
+}
+
+enum MonitoringState {
+  SUSPENDED = 0;
+  ACTIVE = 1;
+}
+
+message KazanExpressAccountShop {
+  string id = 1;
+  string name = 2;
+}
+
+message KazanExpressAccountShopItem {
+  string productId = 1;
+  string skuId = 2;
+  string name = 3;
+  bytes photoKey = 4;
+  int64 fullPrice = 5;
+  int64 sellPrice = 6;
+  string barcode = 7;
+  int64 availableAmount = 8;
+  google.protobuf.Int64Value minimum_threshold = 9;
+  google.protobuf.Int64Value maximum_threshold = 10;
+  google.protobuf.Int32Value step = 11;
+}
+
+message LimitOffsetPagination {
+  int64 limit = 1;
+  int64 offset = 2;
+}
+
+message LimitOffsetPaginationResult {
+  int64 limit = 1;
+  int64 offset = 2;
+  int64 totalOffset = 3;
+}
+
+message SortBy {
+  string field_name = 1;
+  enum SortOrder {
+    ASC = 0;
+    DESC = 1;
+  }
+  SortOrder order = 2;
+}
+
+message CompetitorShopItemRef {
+  int64 product_id = 1;
+  int64 sku_id = 2;
+}
+
+message CompetitorShopItem {
+  string name = 1;
+  CompetitorShopItemRef ref = 2;
+  int64 fullPrice = 3;
+  int64 sellPrice = 4;
+  int64 availableAmount = 5;
+}
+
+// Initialize account request
+message InitializeKazanExpressAccountRequest {
+  string user_id = 1;
+  KazanExpressAccountRef external_account_ref = 2;
+}
+
+message InitializeKazanExpressAccountResponse {
+  oneof response {
+    SuccessInitializeKazanExpressAccountResponse success_response = 1;
+    ErrorInitializeKazanExpressAccountResponse error_response = 2;
+  }
+}
+
+message SuccessInitializeKazanExpressAccountResponse {
+  KazanExpressAccount account = 1;
+}
+
+message ErrorInitializeKazanExpressAccountResponse {
+  enum ErrorCode {
+    UNEXPECTED_ERROR = 0;
+    NOT_FOUND = 1;
+  }
+  ErrorCode code = 1;
+  string description = 2;
+}
+
+// Get KazanExpress accounts
+message GetKazanExpressAccountsRequest {
+  string user_id = 1;
+}
+
+message GetKazanExpressAccountsResponse {
+  oneof response {
+    SuccessGetKazanExpressAccountsResponse success_response = 1;
+    ErrorGetKazanExpressAccountsResponse error_response = 2;
+  }
+}
+
+message SuccessGetKazanExpressAccountsResponse {
+  repeated KazanExpressAccount account = 1;
+}
+
+message ErrorGetKazanExpressAccountsResponse {
+  enum ErrorCode {
+    UNEXPECTED_ERROR = 0;
+    NOT_FOUND = 1;
+  }
+  ErrorCode code = 1;
+  string description = 2;
+}
+
+// Get KazanExpress account
+message GetKazanExpressAccountRequest {
+  string user_id = 1;
+  KazanExpressAccountRef account_ref = 2;
+}
+
+message GetKazanExpressAccountResponse {
+  oneof response {
+    SuccessGetKazanExpressAccountResponse success_response = 1;
+    ErrorGetKazanExpressAccountResponse error_response = 2;
+  }
+}
+
+message SuccessGetKazanExpressAccountResponse {
+  KazanExpressAccount account = 1;
+}
+
+message ErrorGetKazanExpressAccountResponse {
+  enum ErrorCode {
+    UNEXPECTED_ERROR = 0;
+    NOT_FOUND = 1;
+  }
+  ErrorCode code = 1;
+  string description = 2;
+}
+
+// Get user external account shops
+message GetExternalAccountShopsRequest {
+  string user_id = 1;
+  KazanExpressAccountRef external_account_ref = 2;
+}
+
+message GetExternalAccountShopsResponse {
+  oneof response {
+    SuccessGetExternalAccountShopsResponse success_response = 1;
+    ErrorGetExternalAccountShopsResponse error_response = 2;
+  }
+}
+
+message SuccessGetExternalAccountShopsResponse {
+  repeated KazanExpressAccountShop account_shop = 1;
+}
+
+message ErrorGetExternalAccountShopsResponse {
+  enum ErrorCode {
+    UNEXPECTED_ERROR = 0;
+    NOT_FOUND = 1;
+  }
+  ErrorCode code = 1;
+  string description = 2;
+}
+
+// Update external account data
+message UpdateExternalAccountDataRequest {
+  string user_id = 1;
+  KazanExpressAccountRef account_ref = 2;
+}
+
+message UpdateExternalAccountDataResponse {
+  oneof response {
+    SuccessUpdateExternalAccountDataResponse success_response = 1;
+    ErrorUpdateExternalAccountDataResponse error_response = 2;
+  }
+}
+
+message SuccessUpdateExternalAccountDataResponse {
+  string job_id = 1;
+}
+
+message ErrorUpdateExternalAccountDataResponse {
+  enum ErrorCode {
+    UNEXPECTED_ERROR = 0;
+    NOT_FOUND = 1;
+    ALREADY_UPDATED = 2;
+  }
+  ErrorCode code = 1;
+  string description = 2;
+}
+
+// Get external account shop items
+message GetExternalAccountShopItemsRequest {
+  string user_id = 1;
+  KazanExpressAccountRef account_ref = 2;
+  KazanExpressShopRef shop_ref = 3;
+  bool in_pool = 4;
+  LimitOffsetPagination pagination = 5;
+  repeated SortBy sortBy = 6;
+}
+
+message GetExternalAccountShopItemsResponse {
+  oneof response {
+    SuccessGetExternalAccountShopItemsResponse success_response = 1;
+    ErrorGetExternalAccountShopItemsResponse error_response = 2;
+  }
+}
+
+message SuccessGetExternalAccountShopItemsResponse {
+  repeated KazanExpressAccountShopItem shop_items = 1;
+  LimitOffsetPaginationResult pagination = 2;
+}
+
+message ErrorGetExternalAccountShopItemsResponse {
+  enum ErrorCode {
+    UNEXPECTED_ERROR = 0;
+    NOT_FOUND = 1;
+  }
+  ErrorCode code = 1;
+  string description = 2;
+}
+
+// Add shop item pool
+message AddShopItemPoolRequest {
+  string user_id = 1;
+  KazanExpressAccountRef account_ref = 2;
+  KazanExpressShopRef shop_ref = 3;
+  KazanExpressShopItemRef shop_item_ref = 4;
+}
+
+message AddShopItemPoolResponse {
+  oneof response {
+    google.protobuf.Empty success_response = 1;
+    ErrorAddShopItemPoolResponse error_response = 2;
+  }
+}
+
+message ErrorAddShopItemPoolResponse {
+  enum ErrorCode {
+    UNEXPECTED_ERROR = 0;
+    NOT_FOUND = 1;
+  }
+  ErrorCode code = 1;
+  string description = 2;
+}
+
+// Remove shop item pool
+message RemoveShopItemPoolRequest {
+  string user_id = 1;
+  KazanExpressAccountRef account_ref = 2;
+  KazanExpressShopRef shop_ref = 3;
+  KazanExpressShopItemRef shop_item_ref = 4;
+}
+
+message RemoveShopItemPoolResponse {
+  oneof response {
+    google.protobuf.Empty success_response = 1;
+    ErrorAddShopItemPoolResponse error_response = 2;
+  }
+}
+
+message ErrorRemoveShopItemPoolResponse {
+  enum ErrorCode {
+    UNEXPECTED_ERROR = 0;
+    NOT_FOUND = 1;
+  }
+  ErrorCode code = 1;
+  string description = 2;
+}
+
+// Get shop items pool size
+message GetShopItemsPoolSizeRequest {
+  string user_id = 1;
+}
+
+message GetShopItemsPoolSizeResponse {
+  oneof response {
+    SuccessGetShopItemsPoolSizeResponse success_response = 1;
+    ErrorGetShopItemsPoolSizeResponse error_response = 2;
+  }
+}
+
+message SuccessGetShopItemsPoolSizeResponse {
+  int64 items_count = 1;
+}
+
+message ErrorGetShopItemsPoolSizeResponse {
+  enum ErrorCode {
+    UNEXPECTED_ERROR = 0;
+    NOT_FOUND = 1;
+  }
+  ErrorCode code = 1;
+  string description = 2;
+}
+
+// Add shop item competitor
+message AddShopItemCompetitorRequest {
+  string user_id = 1;
+  KazanExpressAccountRef account_ref = 2;
+  KazanExpressShopRef shop_ref = 3;
+  KazanExpressShopItemRef shop_item_ref = 4;
+  CompetitorShopItemRef competitor_shop_item = 5;
+}
+
+message AddShopItemCompetitorResponse {
+  oneof response {
+    google.protobuf.Empty success_response = 1;
+    ErrorAddShopItemCompetitorResponse error_response = 2;
+  }
+}
+
+message ErrorAddShopItemCompetitorResponse {
+  enum ErrorCode {
+    UNEXPECTED_ERROR = 0;
+    USER_ITEM_NOT_FOUND = 1;
+    COMPETITOR_ITEM_NOT_FOUND = 2;
+  }
+  ErrorCode code = 1;
+  string description = 2;
+}
+
+// Remove shop item competitor
+message RemoveShopItemCompetitorRequest {
+  string user_id = 1;
+  KazanExpressAccountRef account_ref = 2;
+  KazanExpressShopRef shop_ref = 3;
+  KazanExpressShopItemRef shop_item_ref = 4;
+  CompetitorShopItemRef competitor_shop_item = 5;
+}
+
+message RemoveShopItemCompetitorResponse {
+  oneof response {
+    google.protobuf.Empty success_response = 1;
+    RemoveAddShopItemCompetitorResponse error_response = 2;
+  }
+}
+
+message RemoveAddShopItemCompetitorResponse {
+  enum ErrorCode {
+    UNEXPECTED_ERROR = 0;
+    USER_ITEM_NOT_FOUND = 1;
+    COMPETITOR_ITEM_NOT_FOUND = 2;
+  }
+  ErrorCode code = 1;
+  string description = 2;
+}
+
+// Get shop item competitors
+message GetShopItemCompetitorsRequest {
+  string user_id = 1;
+  KazanExpressAccountRef account_ref = 2;
+  KazanExpressShopRef shop_ref = 3;
+  KazanExpressShopItemRef shop_item_ref = 4;
+  LimitOffsetPagination pagination = 5;
+  repeated SortBy sortBy = 6;
+}
+
+message GetShopItemCompetitorsResponse {
+  oneof response {
+    SuccessGetShopItemCompetitorResponse success_response = 1;
+    ErrorGetShopItemCompetitorResponse error_response = 2;
+  }
+}
+
+message SuccessGetShopItemCompetitorResponse {
+  repeated CompetitorShopItem competitor_shop_items = 1;
+  LimitOffsetPaginationResult pagination = 2;
+}
+
+message ErrorGetShopItemCompetitorResponse {
+  enum ErrorCode {
+    UNEXPECTED_ERROR = 0;
+    NOT_FOUND = 1;
+  }
+  ErrorCode code = 1;
+  string description = 2;
+}
+
+// Change account monitoring state
+message ChangeAccountMonitoringStateRequest {
+  string user_id = 1;
+  KazanExpressAccountRef account_ref = 2;
+  MonitoringState state = 3;
+}
+
+message ChangeAccountMonitoringStateResponse {
+  oneof response {
+    SuccessAccountMonitoringStateResponse success_response = 1;
+    ErrorAccountMonitoringStateResponse error_response = 2;
+  }
+}
+
+message SuccessAccountMonitoringStateResponse {
+  KazanExpressAccount account = 1;
+}
+
+message ErrorAccountMonitoringStateResponse {
+  enum ErrorCode {
+    UNEXPECTED_ERROR = 0;
+    NOT_FOUND = 1;
+    NOT_ENOUGH_CREDIT = 2;
+  }
+  ErrorCode code = 1;
+  string description = 2;
+}
+
+// Get price change history request
+message GetPriceChangeHistoryRequest {
+  string user_id = 1;
+  KazanExpressAccountRef account_ref = 2;
+}
+
+message GetPriceChangeHistoryResponse {
+  oneof response {
+    SuccessGetPriceChangeHistoryResponse success_response = 1;
+    ErrorGetPriceChangeHistoryResponse error_response = 2;
+  }
+}
+
+message SuccessGetPriceChangeHistoryResponse {
+  string item_name = 1;
+  KazanExpressShopItemRef ref = 2;
+  int64 oldPrice = 3;
+  int64 newPrice = 4;
+}
+
+message ErrorGetPriceChangeHistoryResponse {
+  enum ErrorCode {
+    UNEXPECTED_ERROR = 0;
+    NOT_FOUND = 1;
+  }
+  ErrorCode code = 1;
+  string description = 2;
+}
+
+// Find similar competitor shop items
+message FindSimilarCompetitorShopItemRequest {
+  KazanExpressShopItemRef shop_item_ref = 1;
+}
+
+message FindSimilarCompetitorShopItemResponse {
+  oneof response {
+    SuccessFindSimilarCompetitorShopItemResponse success_response = 1;
+    ErrorFindSimilarCompetitorShopItemResponse error_response = 2;
+  }
+}
+
+message SuccessFindSimilarCompetitorShopItemResponse {
+  message SimilarShopItem {
+    string name = 1;
+    int64 product_id = 2;
+    int64 sku_id = 3;
+  }
+  repeated SimilarShopItem shop_item = 1;
+}
+
+message ErrorFindSimilarCompetitorShopItemResponse {
+  enum ErrorCode {
+    UNEXPECTED_ERROR = 0;
+    NOT_FOUND = 1;
+  }
+  ErrorCode code = 1;
+  string description = 2;
+}
+
+service RepricerService {
+  rpc initializeKazanExpressAccount(InitializeKazanExpressAccountRequest) returns (InitializeKazanExpressAccountResponse);
+
+  rpc getKazanExpressAccounts(GetKazanExpressAccountsRequest) returns (GetKazanExpressAccountsResponse);
+
+  rpc getKazanExpressAccount(GetKazanExpressAccountRequest) returns (GetKazanExpressAccountResponse);
+
+  rpc getExternalAccountShops(GetExternalAccountShopsRequest) returns (GetExternalAccountShopsResponse);
+
+  rpc getExternalAccountShopItems(GetExternalAccountShopItemsRequest) returns (GetExternalAccountShopItemsResponse);
+
+  rpc updateExternalAccountData(UpdateExternalAccountDataRequest) returns (UpdateExternalAccountDataResponse);
+
+  rpc addShopItemPool(AddShopItemPoolRequest) returns (AddShopItemPoolResponse);
+
+  rpc removeShopPool(RemoveShopItemPoolRequest) returns (RemoveShopItemPoolResponse);
+
+  rpc getShopItemsPoolSize(GetShopItemsPoolSizeRequest) returns (GetShopItemsPoolSizeResponse);
+
+  rpc addShopItemCompetitor(AddShopItemCompetitorRequest) returns (AddShopItemCompetitorResponse);
+
+  rpc removeShopItemCompetitor(RemoveShopItemCompetitorRequest) returns (RemoveShopItemCompetitorRequest);
+
+  rpc getShopItemCompetitors(GetShopItemCompetitorsRequest) returns (GetShopItemCompetitorsResponse);
+
+  rpc changeAccountMonitoringState(ChangeAccountMonitoringStateRequest) returns (ChangeAccountMonitoringStateResponse);
+
+  rpc getPriceChangeHistory(GetPriceChangeHistoryRequest) returns (GetPriceChangeHistoryResponse);
+
+  rpc findSimilarCompetitorShopItems(FindSimilarCompetitorShopItemRequest) returns (FindSimilarCompetitorShopItemResponse);
+}
