@@ -96,23 +96,24 @@ message CompetitorShopItem {
 }
 
 // Initialize account request
-message InitializeKazanExpressAccountRequest {
+message AddKazanExpressAccountRequest {
   string user_id = 1;
-  KazanExpressAccountRef external_account_ref = 2;
+  string ke_login = 2;
+  string ke_password = 3;
 }
 
-message InitializeKazanExpressAccountResponse {
+message AddKazanExpressAccountResponse {
   oneof response {
-    SuccessInitializeKazanExpressAccountResponse success_response = 1;
-    ErrorInitializeKazanExpressAccountResponse error_response = 2;
+    SuccessAddKazanExpressAccountResponse success_response = 1;
+    ErrorAddKazanExpressAccountResponse error_response = 2;
   }
 }
 
-message SuccessInitializeKazanExpressAccountResponse {
+message SuccessAddKazanExpressAccountResponse {
   KazanExpressAccount account = 1;
 }
 
-message ErrorInitializeKazanExpressAccountResponse {
+message ErrorAddKazanExpressAccountResponse {
   enum ErrorCode {
     UNEXPECTED_ERROR = 0;
     NOT_FOUND = 1;
@@ -500,7 +501,7 @@ message ErrorFindSimilarCompetitorShopItemResponse {
 }
 
 service RepricerService {
-  rpc initializeKazanExpressAccount(InitializeKazanExpressAccountRequest) returns (InitializeKazanExpressAccountResponse);
+  rpc addKazanExpressAccount(AddKazanExpressAccountRequest) returns (AddKazanExpressAccountResponse);
 
   rpc getKazanExpressAccounts(GetKazanExpressAccountsRequest) returns (GetKazanExpressAccountsResponse);
 
