@@ -26,10 +26,11 @@ message KazanExpressShopItemRef {
 }
 
 message KazanExpressAccount {
-  string name = 1;
-  google.protobuf.Timestamp last_update = 2;
-  MonitoringState monitoring_state = 3;
-  UpdateState update_state = 4;
+  string id = 1;
+  string name = 2;
+  google.protobuf.Timestamp last_update = 3;
+  MonitoringState monitoring_state = 4;
+  UpdateState update_state = 5;
 }
 
 enum UpdateState {
@@ -502,12 +503,67 @@ message ErrorFindSimilarCompetitorShopItemResponse {
   string description = 2;
 }
 
+// Edit KazanExpress account
+message EditKazanExpressAccountRequest {
+  string user_id = 1;
+  KazanExpressAccountRef account_ref = 2;
+  string login = 3;
+  string password = 4;
+}
+
+message EditKazanExpressAccountResponse {
+  oneof response {
+    SuccessEditKazanExpressAccountResponse success_response = 1;
+    ErrorEditKazanExpressAccountResponse error_response = 2;
+  }
+}
+
+message SuccessEditKazanExpressAccountResponse {
+  KazanExpressAccount account = 1;
+}
+
+message ErrorEditKazanExpressAccountResponse {
+  enum ErrorCode {
+    UNEXPECTED_ERROR = 0;
+    NOT_FOUND = 1;
+    WRONG_CREDENTIAL = 2;
+  }
+  ErrorCode code = 1;
+  string description = 2;
+}
+
+// Remove KazanExpress account
+message RemoveKazanExpressAccountRequest {
+  string user_id = 1;
+  KazanExpressAccountRef account_ref = 2;
+}
+
+message RemoveKazanExpressAccountResponse {
+  oneof response {
+    google.protobuf.Empty success_response = 1;
+    ErrorRemoveKazanExpressAccountResponse error_response = 2;
+  }
+}
+
+message ErrorRemoveKazanExpressAccountResponse {
+  enum ErrorCode {
+    UNEXPECTED_ERROR = 0;
+    NOT_FOUND = 1;
+  }
+  ErrorCode code = 1;
+  string description = 2;
+}
+
 service RepricerService {
   rpc addKazanExpressAccount(AddKazanExpressAccountRequest) returns (AddKazanExpressAccountResponse);
 
   rpc getKazanExpressAccounts(GetKazanExpressAccountsRequest) returns (GetKazanExpressAccountsResponse);
 
   rpc getKazanExpressAccount(GetKazanExpressAccountRequest) returns (GetKazanExpressAccountResponse);
+
+  rpc editKazanExpressAccount(EditKazanExpressAccountRequest) returns (EditKazanExpressAccountResponse);
+
+  rpc removeKazanExpressAccount(RemoveKazanExpressAccountRequest) returns (RemoveKazanExpressAccountResponse);
 
   rpc getExternalAccountShops(GetExternalAccountShopsRequest) returns (GetExternalAccountShopsResponse);
 
