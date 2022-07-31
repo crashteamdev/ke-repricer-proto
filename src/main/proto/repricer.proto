@@ -16,7 +16,7 @@ message KazanExpressAccountRef {
 
 message KazanExpressShopRef {
   oneof ref {
-    int64 id = 1;
+    string id = 1;
   }
 }
 
