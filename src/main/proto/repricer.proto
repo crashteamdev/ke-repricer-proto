@@ -54,7 +54,7 @@ message KazanExpressAccountShopItem {
   string productId = 1;
   string skuId = 2;
   string name = 3;
-  bytes photoKey = 4;
+  string photoKey = 4;
   int64 fullPrice = 5;
   int64 sellPrice = 6;
   string barcode = 7;
