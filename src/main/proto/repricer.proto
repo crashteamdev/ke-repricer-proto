@@ -56,10 +56,10 @@ message KazanExpressAccountShopItem {
   string skuId = 2;
   string name = 3;
   string photoKey = 4;
-  int64 fullPrice = 5;
-  int64 sellPrice = 6;
+  int64 full_price = 5;
+  int64 sell_price = 6;
   string barcode = 7;
-  int64 availableAmount = 8;
+  int64 available_amount = 8;
   google.protobuf.Int64Value minimum_threshold = 9;
   google.protobuf.Int64Value maximum_threshold = 10;
   google.protobuf.Int32Value step = 11;
@@ -73,7 +73,7 @@ message LimitOffsetPagination {
 message LimitOffsetPaginationResult {
   int64 limit = 1;
   int64 offset = 2;
-  int64 totalOffset = 3;
+  int64 total_offset = 3;
 }
 
 message SortBy {
@@ -93,9 +93,9 @@ message CompetitorShopItemRef {
 message CompetitorShopItem {
   string name = 1;
   CompetitorShopItemRef ref = 2;
-  int64 fullPrice = 3;
-  int64 sellPrice = 4;
-  int64 availableAmount = 5;
+  int64 full_price = 3;
+  int64 sell_price = 4;
+  int64 available_amount = 5;
 }
 
 // Initialize account request
